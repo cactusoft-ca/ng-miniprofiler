@@ -1,0 +1,21 @@
+{
+  "name": "@cactusoft-ca/ng-miniprofiler",
+  "version": "0.0.1-beta",
+  "description": "An interceptor for MiniProfiler",
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com/cactusoft-ca/ng-miniprofiler.git"
+  },
+  "homepage": "https://github.com/cactusoft-ca/ng-miniprofiler",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  
+  "peerDependencies": {
+    "@angular/common": "^10.2.0",
+    "@angular/core": "^10.2.0"
+  },
+  "dependencies": {
+    "tslib": "^2.0.0"
+  }
+}

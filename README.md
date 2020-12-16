@@ -1,27 +1,95 @@
-# NgMiniprofiler
+# NgMiniProfiler
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.2.0.
+This package contains an Http interceptor for using MiniProfiler with Angular.
 
-## Development server
+## Getting started
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+To use it in your app, simply import the MiniProfilerModule and provide the interceptor.
 
-## Code scaffolding
+```ts
+import { MiniProfilerInterceptor, MiniProfilerModule } from '@cactusoft-ca/ng-miniprofiler';
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+@NgModule({
+  [...]
+  imports: [
+    MiniProfilerModule.forRoot({
+      baseUri: 'http://localhost:12345',
+      colorScheme: 'Auto',
+      maxTraces: 15,
+      position: 'BottomLeft',
+      toggleShortcut: 'Alt+M',
+      enabled: true,
+      enableGlobalMethod: true
+    }),
+  ],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: MiniProfilerInterceptor, multi: true }
+  ]
+})
+export class YourModule { }
+```
 
-## Build
+### Configurations
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+Ng-miniprofiler offers a couple of configurations.
 
-## Running unit tests
+| Config              | Description                                                                            | Default |
+| ------------------- |:---------------------------------------------------------------------------------------|---------|
+| baseUri             | The base uri of the server hosting your MiniProfiler results and `include.min.js` file. Depending on your configs, the results may be under the `profiling` route. The value should then be `http://localhost:12345/profiling`.                                                             | `''`    |
+| colorScheme         | The theme. Either `Light`, `Dark` or `Auto`.                                           | `Auto`  |
+| maxTraces           | Maximum number of traces shown.                                                        | `15`    |
+| position            | Where the popup should be placed. Either `Left`, `Right`, `BottomLeft`, `BottomRight`. | `Left`  |
+| toggleShortcut      | The shortcut for toggling the popup.                                                   | `Alt+M` |
+| showControls        | Whether or not the controls (minimize and clear) should be shown.                      | `false` |
+| enabled             | Whether or not miniprofiler is enabled.                                                | `true`  |
+| enableGlobalMethod  | Whether or not an `enableMiniProfiler` method should be added to the window object. Can be useful in a production environment where you want MiniProfiler to be disabed by default. | `true` |
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-## Running end-to-end tests
+## Backend gotchas
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+If your server lives on a different domain from your Angular app, you may run into two CORS issues.
 
-## Further help
+Firstly, you need to allow your app to request MiniProfiler results. For an ASP.NET Web API solution, that's one way of doing so (in the `global.asax.cs` file).
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+```cs
+protected void Application_BeginRequest() 
+{ 
+    var context = HttpContext.Current; 
+    if (HttpContext.Current.Request.Path.StartsWith("/mini-profiler-resources")) 
+    { 
+        var origin = context.Request.Headers.Get("Origin"); 
+        if (origin != null) 
+        { 
+            context.Response.Headers.Add("Access-Control-Allow-Origin", origin); 
+        } 
+        if (context.Request.HttpMethod == "OPTIONS") 
+        { 
+            context.Response.StatusCode = 200; 
+            context.Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type"); 
+            context.Response.Headers.Add("Access-Control-Allow-Methods", "OPTIONS, GET"); 
+        } 
+    } 
+}
+```
+
+Secondly, your server needs to let your Angular app access the `X-MiniProfiler-Ids` headers. You may do that by adding an ActionFilter.
+
+```cs
+public class MiniProfilerCorsHeaderFilter : ActionFilterAttribute
+{
+    public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
+    {
+        actionExecutedContext.Response.Headers.Add("Access-Control-Expose-Headers", "X-MiniProfiler-Ids");
+    }
+}
+```
+
+## Enable mini-profiler manually
+
+If you set the `enableGlobalMethod` configuration to `true`, you may call the `enableMiniProfiler` from your browser's devtools console to enable MiniProfiler manually.
+
+```ts
+> enableMiniProfiler();
+>
+> MiniProfiler loaded.
+```

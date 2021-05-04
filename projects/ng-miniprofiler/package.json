@@ -1,6 +1,6 @@
 {
   "name": "@cactusoft-ca/ng-miniprofiler",
-  "version": "0.0.1-beta",
+  "version": "0.0.1-beta.1",
   "description": "An interceptor for MiniProfiler",
   "repository": {
     "type": "git",

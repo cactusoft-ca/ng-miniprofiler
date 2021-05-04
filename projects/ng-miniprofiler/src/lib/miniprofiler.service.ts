@@ -2,6 +2,7 @@ import {
   Inject,
   Injectable,
   InjectionToken,
+  OnDestroy,
   Optional,
   SkipSelf,
 } from '@angular/core';
@@ -12,7 +13,7 @@ export const MINI_PROFILER_CONFIG = new InjectionToken<string>(
 );
 
 @Injectable()
-export class MiniProfilerService {
+export class MiniProfilerService implements OnDestroy {
   constructor(
     @Inject(MINI_PROFILER_CONFIG) public config: MiniProfilerConfig,
     @Optional() @SkipSelf() other?: MiniProfilerService
@@ -24,6 +25,11 @@ export class MiniProfilerService {
     if (this.config.enableGlobalMethod !== false) {
       window['enableMiniProfiler'] = () => this.loadMiniProfiler(true);
     }
+  }
+
+  public ngOnDestroy(): void {
+    document.removeChild(document.getElementById('mini-profiler'));
+    window['enableMiniProfiler'] = null;
   }
 
   public loadMiniProfiler(force: boolean = false): void {

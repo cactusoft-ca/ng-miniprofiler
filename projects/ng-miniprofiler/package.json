@@ -10,7 +10,6 @@
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
-  
   "peerDependencies": {
     "@angular/common": "^10.2.0",
     "@angular/core": "^10.2.0"

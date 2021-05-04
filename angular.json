@@ -36,12 +36,11 @@
               "projects/ng-miniprofiler/tsconfig.lib.json",
               "projects/ng-miniprofiler/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
-    }},
+    }
+  },
   "defaultProject": "ng-miniprofiler"
 }

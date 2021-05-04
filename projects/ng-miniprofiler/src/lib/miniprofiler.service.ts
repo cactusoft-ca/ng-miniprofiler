@@ -1,16 +1,22 @@
-import { Inject, Injectable, InjectionToken, Optional, SkipSelf } from '@angular/core';
+import {
+  Inject,
+  Injectable,
+  InjectionToken,
+  Optional,
+  SkipSelf,
+} from '@angular/core';
 import { MiniProfilerConfig } from './miniprofiler-config.model';
 
-export const MINI_PROFILER_CONFIG = new InjectionToken<string>('MiniProfilerConfig');
+export const MINI_PROFILER_CONFIG = new InjectionToken<string>(
+  'MiniProfilerConfig'
+);
 
 @Injectable()
 export class MiniProfilerService {
-
   constructor(
     @Inject(MINI_PROFILER_CONFIG) public config: MiniProfilerConfig,
     @Optional() @SkipSelf() other?: MiniProfilerService
   ) {
-
     if (other) {
       throw new Error('MiniProfilerService should only be instanciated once.');
     }
@@ -21,13 +27,14 @@ export class MiniProfilerService {
   }
 
   public loadMiniProfiler(force: boolean = false): void {
-
     if (!force && !this.config.enabled) {
       return;
     }
 
     if (document.getElementById('mini-profiler')) {
-      throw new Error(`An element with id 'mini-profiler' already is already present in the DOM.`);
+      throw new Error(
+        `An element with id 'mini-profiler' already is already present in the DOM.`
+      );
     }
 
     const scriptElement = document.createElement('script');
@@ -40,10 +47,13 @@ export class MiniProfilerService {
     scriptElement.dataset.scheme = this.config.colorScheme || 'Auto';
     scriptElement.dataset.controls = `${this.config.showControls === true}`;
     scriptElement.dataset.authorized = 'true';
-    scriptElement.dataset.maxTraces = this.config.maxTraces == null ? '15' : `${this.config.maxTraces}`;
-    scriptElement.dataset.toggleShortcut = this.config.toggleShortcut || 'Alt+M';
+    scriptElement.dataset.maxTraces =
+      this.config.maxTraces == null ? '15' : `${this.config.maxTraces}`;
+    scriptElement.dataset.toggleShortcut =
+      this.config.toggleShortcut || 'Alt+M';
     scriptElement.onload = () => console.log('MiniProfiler loaded.');
-    scriptElement.onerror = (err: any) => console.error('An error occured while loading MiniProfiler', err);
+    scriptElement.onerror = (err: any) =>
+      console.error('An error occured while loading MiniProfiler', err);
 
     document.getElementsByTagName('body')[0].appendChild(scriptElement);
   }

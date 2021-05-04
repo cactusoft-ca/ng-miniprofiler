@@ -28,7 +28,8 @@ export class MiniProfilerService implements OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    document.removeChild(document.getElementById('mini-profiler'));
+    const mpNode = document.getElementById('mini-profiler');
+    mpNode?.parentElement?.removeChild(mpNode);
     window['enableMiniProfiler'] = null;
   }
 

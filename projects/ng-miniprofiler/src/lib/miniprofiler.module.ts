@@ -1,11 +1,11 @@
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, ModuleWithProviders, NgModule } from '@angular/core';
-import { MiniProfilerConfig } from './miniprofiler-config.model';
-import { MiniProfilerInterceptor } from './miniprofiler.interceptor';
 import {
-  MiniProfilerService,
+  MiniProfilerConfig,
   MINI_PROFILER_CONFIG,
-} from './miniprofiler.service';
+} from './miniprofiler-config.model';
+import { MiniProfilerInterceptor } from './miniprofiler.interceptor';
+import { MiniProfilerService } from './miniprofiler.service';
 
 @NgModule()
 export class MiniProfilerModule {

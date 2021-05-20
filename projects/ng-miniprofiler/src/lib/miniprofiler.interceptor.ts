@@ -7,7 +7,10 @@ import {
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { withLatestFrom } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { tap } from 'rxjs/operators';
+import { MiniProfilerService } from './miniprofiler.service';
 
 declare const MiniProfiler:
   | {
@@ -18,13 +21,19 @@ declare const MiniProfiler:
 
 @Injectable()
 export class MiniProfilerInterceptor implements HttpInterceptor {
+  constructor(private service: MiniProfilerService) {}
+
   public intercept(
     request: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
-      tap((evt) => {
+      withLatestFrom(this.service.isEnabled$),
+      tap(([evt, isEnabled]) => {
         if (!(evt instanceof HttpResponse)) {
+          return;
+        }
+        if (!isEnabled) {
           return;
         }
 
@@ -34,7 +43,8 @@ export class MiniProfilerInterceptor implements HttpInterceptor {
           );
           this.fetchMiniProfilerResults(miniProfilerHeaders);
         } catch {}
-      })
+      }),
+      map(([evt]) => evt)
     );
   }
 

@@ -1,3 +1,9 @@
+import { InjectionToken } from '@angular/core';
+
+export const MINI_PROFILER_CONFIG = new InjectionToken<string>(
+  'MiniProfilerConfig'
+);
+
 export interface MiniProfilerConfig {
   /** The path to the server providing MiniProfiler results. For example: http://localhost:12345/profiling */
   baseUri?: string;

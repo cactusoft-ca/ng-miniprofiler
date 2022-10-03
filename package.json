@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "build": "ng build ng-miniprofiler",
-    "build:prod": "ng build ng-miniprofiler --prod",
+    "build:prod": "ng build ng-miniprofiler --configuration=production",
     "test": "ng test",
     "lint": "ng lint ng-miniprofiler"
   },

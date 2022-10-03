@@ -92,3 +92,26 @@ If you set the `enableGlobalMethod` configuration to `true`, you may call the `e
 >
 > MiniProfiler loaded.
 ```
+
+## To publish npm package
+
+- The version in the package.json in the project folder must be incremented
+- On github, in Settings -> Developer settings -> Personal Access Tokens. Generate a new token with the privileges to write:packages.
+
+- Run command with your username, token and email.
+
+```
+npm login --scope=@cactusoft-ca --registry=https://npm.pkg.github.com
+```
+
+In the _./projects/ng-miniprofiler_ folder, run
+
+```
+npm run build:prod
+```
+
+Finally, run from the _./dist/ng-miniprofiler_ folder<project-name>
+
+```
+npm publish
+```

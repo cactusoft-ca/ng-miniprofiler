@@ -1,5 +1,5 @@
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { APP_INITIALIZER, ModuleWithProviders, NgModule, Provider, Type } from '@angular/core';
+import { APP_INITIALIZER, ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, ModuleWithProviders, NgModule, Provider, Type, TypeProvider, ValueProvider } from '@angular/core';
 import { MiniProfilerConfig } from './miniprofiler-config.model';
 import { MiniProfilerInterceptor } from './miniprofiler.interceptor';
 import {
@@ -9,33 +9,21 @@ import {
 
 @NgModule()
 export class MiniProfilerModule {
-  static forRoot(value: {
-    useValue?: MiniProfilerConfig,
-    useFactory?: Function,
-    useClass?: Type<MiniProfilerConfig>,
-    deps?: any,
-    multi?: boolean
-  }): ModuleWithProviders<MiniProfilerModule>;
+  static forRoot(value: Omit<Provider, 'provide'>): ModuleWithProviders<MiniProfilerModule>;
   /**
    * @deprecated This signature will be removed in a future version. Instead you
    * can specify the value to be used with { useValue: }
    */
   static forRoot(value: MiniProfilerConfig): ModuleWithProviders<MiniProfilerModule>;
-  static forRoot(value: {
-    useValue?: MiniProfilerConfig,
-    useFactory?: Function,
-    useClass?: Type<MiniProfilerConfig>,
-    deps?: any,
-    multi?: boolean
-  } | MiniProfilerConfig
+  static forRoot(value: Omit<Provider, 'provide'> | MiniProfilerConfig
   ): ModuleWithProviders<MiniProfilerModule> {
     const configProvider = { 
       provide: MINI_PROFILER_CONFIG, 
-      useValue: MiniProfilerModule.isMiniProfilerConfig(value) ? value : value.useValue, 
-      useFactory: !MiniProfilerModule.isMiniProfilerConfig(value) ? value?.useFactory : undefined, 
-      useClass: !MiniProfilerModule.isMiniProfilerConfig(value) ? value?.useClass : undefined,
-      deps: !MiniProfilerModule.isMiniProfilerConfig(value) ? value?.deps : undefined,
-      multi: !MiniProfilerModule.isMiniProfilerConfig(value) ? value?.multi : undefined,
+      useValue: MiniProfilerModule.isMiniProfilerConfig(value) ? value : (MiniProfilerModule.isValue(value) ? value.useValue : undefined), 
+      useFactory: MiniProfilerModule.isFactory(value) ? value.useFactory : undefined, 
+      useClass: MiniProfilerModule.isClass(value) ? value?.useClass : undefined,
+      deps: MiniProfilerModule.hasDeps(value) ? value?.deps : undefined,
+      multi: MiniProfilerModule.hasMulti(value) ? value?.multi : undefined,
     };
 
     // Cleanup keys
@@ -61,16 +49,29 @@ export class MiniProfilerModule {
     };
   }
 
-
-  private static isMiniProfilerConfig(value: {
-    useValue?: MiniProfilerConfig,
-    useFactory?: Function,
-    useClass?: Type<MiniProfilerConfig>
-  } | MiniProfilerConfig): value is MiniProfilerConfig {
+  private static isMiniProfilerConfig(value: Omit<Provider, 'provide'> | MiniProfilerConfig): value is MiniProfilerConfig {
     return 'baseUri' in value;
   }
 
+  private static isFactory(value: Omit<Provider, 'provide'> | MiniProfilerConfig): value is FactoryProvider {
+    return 'useFactory' in value;
+  }
 
+  private static isValue(value: Omit<Provider, 'provide'> | MiniProfilerConfig): value is ValueProvider {
+    return 'useValue' in value;
+  }
+
+  private static isClass(value: Omit<Provider, 'provide'> | MiniProfilerConfig): value is ClassProvider {
+    return 'useClass' in value;
+  }
+
+  private static hasMulti(value: Omit<Provider, 'provide'> | MiniProfilerConfig): value is { multi: boolean } {
+    return 'multi' in value;
+  }
+
+  private static hasDeps(value: Omit<Provider, 'provide'> | MiniProfilerConfig): value is { deps?: any[] } {
+    return 'deps' in value;
+  }
 }
 
 export function loadMiniProfilerFactory(

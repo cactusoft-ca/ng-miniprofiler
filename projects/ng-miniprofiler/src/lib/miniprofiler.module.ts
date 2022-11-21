@@ -12,19 +12,40 @@ export class MiniProfilerModule {
   static forRoot(value: {
     useValue?: MiniProfilerConfig,
     useFactory?: Function,
-    useClass?: Type<MiniProfilerConfig>
+    useClass?: Type<MiniProfilerConfig>,
+    deps?: any,
+    multi?: boolean
+  }): ModuleWithProviders<MiniProfilerModule>;
+  /**
+   * @deprecated This signature will be removed in a future version. Instead you
+   * can specify the value to be used with { useValue: }
+   */
+  static forRoot(value: MiniProfilerConfig): ModuleWithProviders<MiniProfilerModule>;
+  static forRoot(value: {
+    useValue?: MiniProfilerConfig,
+    useFactory?: Function,
+    useClass?: Type<MiniProfilerConfig>,
+    deps?: any,
+    multi?: boolean
   } | MiniProfilerConfig
   ): ModuleWithProviders<MiniProfilerModule> {
+    const configProvider = { 
+      provide: MINI_PROFILER_CONFIG, 
+      useValue: MiniProfilerModule.isMiniProfilerConfig(value) ? value : value.useValue, 
+      useFactory: !MiniProfilerModule.isMiniProfilerConfig(value) ? value?.useFactory : undefined, 
+      useClass: !MiniProfilerModule.isMiniProfilerConfig(value) ? value?.useClass : undefined,
+      deps: !MiniProfilerModule.isMiniProfilerConfig(value) ? value?.deps : undefined,
+      multi: !MiniProfilerModule.isMiniProfilerConfig(value) ? value?.multi : undefined,
+    };
+
+    // Cleanup keys
+    Object.keys(configProvider).forEach(key => configProvider[key] === undefined ? delete configProvider[key] : {});
+
     return {
       ngModule: MiniProfilerModule,
       providers: [
         MiniProfilerService,
-        { 
-          provide: MINI_PROFILER_CONFIG, 
-          useValue: MiniProfilerModule.isMiniProfilerConfig(value) ? value : value.useValue, 
-          useFactory: !MiniProfilerModule.isMiniProfilerConfig(value) ? value?.useFactory : undefined, 
-          useClass: !MiniProfilerModule.isMiniProfilerConfig(value) ? value?.useClass : undefined
-        },
+        configProvider,
         {
           provide: HTTP_INTERCEPTORS,
           useClass: MiniProfilerInterceptor,

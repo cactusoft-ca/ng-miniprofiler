@@ -104,7 +104,7 @@ If you set the `enableGlobalMethod` configuration to `true`, you may call the `e
 npm login --scope=@cactusoft-ca --registry=https://npm.pkg.github.com
 ```
 
-In the _./projects/ng-miniprofiler_ folder, run
+In the _./projects_ folder, run
 
 ```
 npm run build:prod

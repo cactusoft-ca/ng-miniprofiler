@@ -1,6 +1,6 @@
 {
   "name": "@cactusoft-ca/ng-miniprofiler",
-  "version": "14.0.0-beta.3",
+  "version": "15.0.0",
   "description": "An interceptor for MiniProfiler",
   "repository": {
     "type": "git",
@@ -11,8 +11,8 @@
     "registry": "https://npm.pkg.github.com"
   },
   "peerDependencies": {
-    "@angular/common": ">= 14.0.0 < 15.0.0",
-    "@angular/core": ">= 14.0.0 < 15.0.0"
+    "@angular/common": ">= 15.0.0 < 16.0.0",
+    "@angular/core": ">= 15.0.0 < 16.0.0"
   },
   "dependencies": {
     "tslib": "^2.0.0"
